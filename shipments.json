@@ -1,0 +1,11 @@
+{
+  "id": 20008000,
+  "shipper_name": "Majestic Loads",
+  "origin_city": "Oklahoma City",
+  "origin_state": "Oklahoma",
+  "receiver_name": "FedEx",
+  "destination_city": "Great Falls",
+  "destination_state": "Montana",
+  "cargo_type": "Confetti",
+  "payment_amount": 162200
+}

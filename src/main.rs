@@ -1,3 +1,8 @@
+use serde::Serialize;
+use serde::Deserialize;
+use std::error::Error;
+
+#[derive(Serialize, Deserialize, Debug)]
 struct Trip {
     id: u32,
     shipper_name: String,
@@ -10,6 +15,7 @@ struct Trip {
     payment_amount: u32,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
 enum State{
     Alabama,
     Alaska,
@@ -120,7 +126,12 @@ impl State {
     }
 }
 
-fn main() {
+
+
+
+fn main() -> Result<(), Box<dyn Error>> {
+    use std::fs;
+
     let my_first_trip = Trip {
         id: 20008000,
         shipper_name: String::from("Majestic Loads"),
@@ -137,5 +148,15 @@ fn main() {
     println!("Origin: {}, {}", my_first_trip.origin_city, my_first_trip.origin_state.abbreviation());
     println!("Destination: {}, {}", my_first_trip.destination_city, my_first_trip.destination_state.abbreviation());
     println!("Shipper: {}", my_first_trip.shipper_name);
-    println!("Receiver: {}", my_first_trip.receiver_name)
+    println!("Receiver: {}", my_first_trip.receiver_name);
+
+
+    let json = serde_json::to_string_pretty(&my_first_trip)?;
+    fs::write("shipments.json", json)?;
+    Ok(())
+}
+
+fn save(trips: &Vec<Trip>) -> Result<(), Box<dyn std::error::Error>> {
+    let json = serde_json::to_string_pretty(trips)?;
+    Ok(())
 }
