@@ -1,0 +1,24 @@
+[
+  {
+    "id": 20008000,
+    "shipper_name": "Majestic Loads",
+    "origin_city": "Oklahoma City",
+    "origin_state": "Oklahoma",
+    "receiver_name": "FedEx",
+    "destination_city": "Great Falls",
+    "destination_state": "Montana",
+    "cargo_type": "Confetti",
+    "payment_amount": 162200
+  },
+  {
+    "id": 20008001,
+    "shipper_name": "Grain Campaign",
+    "origin_city": "Tulsa",
+    "origin_state": "Oklahoma",
+    "receiver_name": "Lt. Mills",
+    "destination_city": "Barstow",
+    "destination_state": "California",
+    "cargo_type": "Grain",
+    "payment_amount": 129400
+  }
+]

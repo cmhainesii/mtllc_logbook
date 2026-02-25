@@ -1,10 +1,11 @@
 use serde::Serialize;
 use serde::Deserialize;
 use std::error::Error;
+use std::fs;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Trip {
-    id: u32,
+    id: u64,
     shipper_name: String,
     origin_city: String,
     origin_state: State,
@@ -130,33 +131,90 @@ impl State {
 
 
 fn main() -> Result<(), Box<dyn Error>> {
-    use std::fs;
 
-    let my_first_trip = Trip {
-        id: 20008000,
-        shipper_name: String::from("Majestic Loads"),
-        origin_city: String::from("Oklahoma City"),
-        origin_state: State::Oklahoma,
-        receiver_name: String::from("FedEx"),
-        destination_city: String::from("Great Falls"),
-        destination_state: State::Montana,
-        cargo_type: String::from("Confetti"),
-        payment_amount: 162_200,
-    };
+    // const FIRST_ID: u64 = 20008000;
 
-    println!("Trip: \n");
-    println!("Origin: {}, {}", my_first_trip.origin_city, my_first_trip.origin_state.abbreviation());
-    println!("Destination: {}, {}", my_first_trip.destination_city, my_first_trip.destination_state.abbreviation());
-    println!("Shipper: {}", my_first_trip.shipper_name);
-    println!("Receiver: {}", my_first_trip.receiver_name);
+    // let mut current_id = FIRST_ID;
 
+    // let mut trip_log = Vec::new();
+    // let trip = Trip {
+    //     id: current_id,
+    //     shipper_name: String::from("Majestic Loads"),
+    //     origin_city: String::from("Oklahoma City"),
+    //     origin_state: State::Oklahoma,
+    //     receiver_name: String::from("FedEx"),
+    //     destination_city: String::from("Great Falls"),
+    //     destination_state: State::Montana,
+    //     cargo_type: String::from("Confetti"),
+    //     payment_amount: 162_200,
+    // };
+    // current_id += 1;
 
-    let json = serde_json::to_string_pretty(&my_first_trip)?;
-    fs::write("shipments.json", json)?;
+    // trip_log.push(trip);
+
+    // let trip = Trip {
+    //     id: current_id,
+    //     shipper_name: String::from("Grain Campaign"),
+    //     origin_city: String::from("Tulsa"),
+    //     origin_state: State::Oklahoma,
+    //     receiver_name: String::from("Lt. Mills"),
+    //     destination_city: String::from("Barstow"),
+    //     destination_state: State::California,
+    //     cargo_type: String::from("Grain"),
+
+    // for trip in &trip_log {
+    //     println!("Trip: \n");
+    //     println!("Origin: {}, {}", trip.origin_city, trip.origin_state.abbreviation());
+    //     println!("Destination: {}, {}", trip.destination_city, trip.destination_state.abbreviation());
+    //     println!("Shipper: {}", trip.shipper_name);
+    //     println!("Receiver: {}", trip.receiver_name);
+    // }
+
+    // save(&trip_log)?;
+
+    let trip_log = load_or_default();
+
+    let trip = Trip {
+        id: next_id(&trip_log),
+        
+    }
+
+    for trip in &trip_log {
+        println!("Trip: \n");
+        println!("Origin: {}, {}", trip.origin_city, trip.origin_state.abbreviation());
+        println!("Destination: {}, {}", trip.destination_city, trip.destination_state.abbreviation());
+        println!("Shipper: {}", trip.shipper_name);
+        println!("Receiver: {}", trip.receiver_name);
+    }
+
     Ok(())
 }
 
-fn save(trips: &Vec<Trip>) -> Result<(), Box<dyn std::error::Error>> {
+fn save(trips: &[Trip]) -> Result<(), Box<dyn std::error::Error>> {
+    
     let json = serde_json::to_string_pretty(trips)?;
+    fs::write("trips.json", json)?;
     Ok(())
+}
+
+
+fn load() -> Result<Vec<Trip>, Box<dyn std::error::Error>> {
+    let data = fs::read_to_string("trips.json")?;
+    let trips = serde_json::from_str(&data)?;
+    Ok(trips)
+}
+
+fn load_or_default() -> Vec<Trip> {
+    match load() {
+        Ok(data) => data,
+        Err(_) => Vec::new(),
+    }
+}
+
+fn next_id(trips: &[Trip]) -> u64 {
+    trips
+        .iter()
+        .map(|t| t.id)
+        .max()
+        .unwrap_or(80006000) + 1
 }
