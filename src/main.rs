@@ -4,6 +4,7 @@ use std::error::Error;
 use std::fs;
 
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(default)]
 struct Trip {
     id: u64,
     shipper_name: String,
@@ -14,6 +15,22 @@ struct Trip {
     destination_state: State,
     cargo_type: String,
     payment_amount: u32,
+}
+
+impl Default for Trip {
+    fn default() -> Self {
+        Self {
+            id: 0,
+            shipper_name: String::new(),
+            origin_city: String::new(),
+            origin_state: State::NewJersey,
+            receiver_name: String::new(),
+            destination_city: String::new(),
+            destination_state: State::Pennsylvania,
+            cargo_type: String::new(),
+            payment_amount: 0
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -172,12 +189,21 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // save(&trip_log)?;
 
-    let trip_log = load_or_default();
+    let mut trip_log = load_or_default();
 
     let trip = Trip {
         id: next_id(&trip_log),
-        
-    }
+        shipper_name: String::from("Gemini Labs"),
+        origin_city: String::from("Pittsburgh"),
+        origin_state: State::Pennsylvania,
+        receiver_name: String::from("ClosedAI"),
+        destination_city: String::from("Orlando"),
+        destination_state: State::Florida,
+        cargo_type: String::from("Liquid Electricity"),
+        payment_amount: 32_600        
+    };
+
+    trip_log.push(trip);
 
     for trip in &trip_log {
         println!("Trip: \n");
@@ -186,6 +212,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("Shipper: {}", trip.shipper_name);
         println!("Receiver: {}", trip.receiver_name);
     }
+
+    save(&trip_log)?;
 
     Ok(())
 }

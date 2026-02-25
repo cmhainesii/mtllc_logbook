@@ -20,5 +20,16 @@
     "destination_state": "California",
     "cargo_type": "Grain",
     "payment_amount": 129400
+  },
+  {
+    "id": 20008002,
+    "shipper_name": "Gemini Labs",
+    "origin_city": "Pittsburgh",
+    "origin_state": "Pennsylvania",
+    "receiver_name": "ClosedAI",
+    "destination_city": "Orlando",
+    "destination_state": "Florida",
+    "cargo_type": "Liquid Electricity",
+    "payment_amount": 32600
   }
 ]
