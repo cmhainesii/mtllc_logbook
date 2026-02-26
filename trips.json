@@ -31,5 +31,27 @@
     "destination_state": "Florida",
     "cargo_type": "Liquid Electricity",
     "payment_amount": 32600
+  },
+  {
+    "id": 20008003,
+    "shipper_name": "Juul Labs",
+    "origin_city": "Sunnyvale",
+    "origin_state": "California",
+    "receiver_name": "7-Eleven",
+    "destination_city": "New Brunswick",
+    "destination_state": "NewJersey",
+    "cargo_type": "Liquid Niccotine",
+    "payment_amount": 80300
+  },
+  {
+    "id": 20008004,
+    "shipper_name": "Taco Bell",
+    "origin_city": "El Passo",
+    "origin_state": "NewMexico",
+    "receiver_name": "Tack Bell",
+    "destination_city": "Tulsa",
+    "destination_state": "Oklahoma",
+    "cargo_type": "Taco Shells",
+    "payment_amount": 29800
   }
 ]

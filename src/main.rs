@@ -2,6 +2,9 @@ use serde::Serialize;
 use serde::Deserialize;
 use std::error::Error;
 use std::fs;
+use std::io;
+use std::io::Write;
+use std::str::FromStr;
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(default)]
@@ -29,6 +32,66 @@ impl Default for Trip {
             destination_state: State::Pennsylvania,
             cargo_type: String::new(),
             payment_amount: 0
+        }
+    }
+}
+
+impl FromStr for State {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.trim().to_uppercase().as_str() {
+            "AL" => Ok(State::Alabama),
+            "AK" => Ok(State::Alaska),
+            "AR" => Ok(State::Arkansas),
+            "AZ" => Ok(State::Arizona),
+            "CA" => Ok(State::California),
+            "CO" => Ok(State::Colorado),
+            "CT" => Ok(State::Connecticut),
+            "DE" => Ok(State::Delaware),
+            "FL" => Ok(State::Florida),
+            "GA" => Ok(State::Georgia),
+            "HI" => Ok(State::Hawaii),
+            "ID" => Ok(State::Idaho),
+            "IL" => Ok(State::Illinois),
+            "IN" => Ok(State::Indiana),
+            "IA" => Ok(State::Iowa),
+            "KS" => Ok(State::Kansas),
+            "KY" => Ok(State::Kentucky),
+            "LA" => Ok(State::Louisiana),
+            "ME" => Ok(State::Maine),
+            "MD" => Ok(State::Maryland),
+            "MA" => Ok(State::Massachusetts),
+            "MI" => Ok(State::Michigan),
+            "MN" => Ok(State::Minnesota),
+            "MS" => Ok(State::Mississippi),
+            "MO" => Ok(State::Missouri),
+            "MT" => Ok(State::Montana),
+            "NE" => Ok(State::Nebraska),
+            "NV" => Ok(State::Nevada),
+            "NH" => Ok(State::NewHampshire),
+            "NJ" => Ok(State::NewJersey),
+            "NM" => Ok(State::NewMexico),
+            "NY" => Ok(State::NewYork),
+            "NC" => Ok(State::NorthCarolina),
+            "ND" => Ok(State::NorthDakota),
+            "OH" => Ok(State::Ohio),
+            "OK" => Ok(State::Oklahoma),
+            "OR" => Ok(State::Oregon),
+            "PA" => Ok(State::Pennsylvania),
+            "RI" => Ok(State::RhodeIsland),
+            "SC" => Ok(State::SouthCarolina),
+            "SD" => Ok(State::SouthDakota),
+            "TN" => Ok(State::Tennessee),
+            "TX" => Ok(State::Texas),
+            "UT" => Ok(State::Utah),
+            "VT" => Ok(State::Vermont),
+            "VA" => Ok(State::Virginia),
+            "WA" => Ok(State::Washington),
+            "WV" => Ok(State::WestVirginia),
+            "WI" => Ok(State::Wisconsin),
+            "WY" => Ok(State::Wyoming),
+            _ => Err(format!("Invalid state: {}", s)),
         }
     }
 }
@@ -191,17 +254,40 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut trip_log = load_or_default();
 
+    // let trip = Trip {
+    //     id: next_id(&trip_log),
+    //     shipper_name: String::from("Gemini Labs"),
+    //     origin_city: String::from("Pittsburgh"),
+    //     origin_state: State::Pennsylvania,
+    //     receiver_name: String::from("ClosedAI"),
+    //     destination_city: String::from("Orlando"),
+    //     destination_state: State::Florida,
+    //     cargo_type: String::from("Liquid Electricity"),
+    //     payment_amount: 32_600        
+    // };
+
+    let id = next_id(&trip_log);
+    let shipper_name = prompt("Shipper name: ")?;
+    let origin_city = prompt("Origin City: ")?;
+    let origin_state = prompt_state("Origin State (2-letter code): ")?;
+    let receiver_name = prompt("Receiver Name: ")?;
+    let destination_city = prompt("Destination City: ")?;
+    let destination_state = prompt_state("Destination State: ")?;
+    let cargo_type = prompt("Cargo Type: ")?;
+    let payment_amount = prompt_u32("Payment Amount: $")?;
+
     let trip = Trip {
-        id: next_id(&trip_log),
-        shipper_name: String::from("Gemini Labs"),
-        origin_city: String::from("Pittsburgh"),
-        origin_state: State::Pennsylvania,
-        receiver_name: String::from("ClosedAI"),
-        destination_city: String::from("Orlando"),
-        destination_state: State::Florida,
-        cargo_type: String::from("Liquid Electricity"),
-        payment_amount: 32_600        
+        id,
+        shipper_name,
+        origin_city,
+        origin_state,
+        receiver_name,
+        destination_city,
+        destination_state,
+        cargo_type,
+        payment_amount,
     };
+    
 
     trip_log.push(trip);
 
@@ -220,7 +306,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 fn save(trips: &[Trip]) -> Result<(), Box<dyn std::error::Error>> {
     
-    let json = serde_json::to_string_pretty(trips)?;
+    let mut json = serde_json::to_string_pretty(trips)?;
+    json.push('\n');
     fs::write("trips.json", json)?;
     Ok(())
 }
@@ -245,4 +332,33 @@ fn next_id(trips: &[Trip]) -> u64 {
         .map(|t| t.id)
         .max()
         .unwrap_or(80006000) + 1
+}
+
+fn prompt(message: &str) -> Result<String, Box<dyn std::error::Error>> {
+    print!("{}", message);
+    io::stdout().flush()?; // ensure prompt is shown before input prompt
+
+    let mut input = String::new();
+    io::stdin().read_line(&mut input)?;
+    Ok(input.trim().to_string())
+}
+
+fn prompt_state(message: &str) -> Result<State, Box<dyn std::error::Error>> {
+    loop {
+        let input = prompt(message)?;
+        match input.parse::<State>() {
+            Ok(state) => return Ok(state),
+            Err(_) => println!("Invalid state. Please enter 2-letter abbreviation.")
+        }
+    }
+}
+
+fn prompt_u32(message: &str) -> Result<u32, Box<dyn std::error::Error>> {
+    loop {
+        let input = prompt(message)?;
+        match input.parse::<u32>() {
+            Ok(value) => return Ok(value),
+            Err(_) => println!("Please enter a valid positive number."),
+        }
+    }
 }
