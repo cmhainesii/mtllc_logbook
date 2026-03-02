@@ -297,6 +297,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("Destination: {}, {}", trip.destination_city, trip.destination_state.abbreviation());
         println!("Shipper: {}", trip.shipper_name);
         println!("Receiver: {}", trip.receiver_name);
+        println!("Cargo Type: {}", trip.cargo_type);
+        println!("Payment: ${}", trip.payment_amount);
     }
 
     save(&trip_log)?;
